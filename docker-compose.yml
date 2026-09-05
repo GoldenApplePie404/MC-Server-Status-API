@@ -1,0 +1,35 @@
+# Minecraft 服务器状态查询 API 容器编排
+# 用法：docker compose up -d --build
+services:
+  mc-status-api:
+    build: .
+    image: mc-status-api:latest
+    container_name: mc-status-api
+    ports:
+      - "8080:8080"
+    volumes:
+      # 持久化运行期数据：SQLite 监控库、favicon、头像缓存
+      - mc-status-data:/app/data
+      - mc-status-favicons:/app/favicons
+      - mc-status-avatars:/app/avatars
+    environment:
+      # 环境变量覆盖 config/config.php 的对应配置项（可选，均可省略）
+      # - MCAPI_TIMEOUT_SECONDS=5
+      # - MCAPI_CACHE_ENABLED=true
+      # - MCAPI_CACHE_TTL_SECONDS=30
+      # - MCAPI_BATCH_MAX_SERVERS=20
+      # - MCAPI_BATCH_TIMEOUT_SECONDS=10
+      # - MCAPI_MONITOR_ENABLED=true
+      # - MCAPI_MONITOR_DB_PATH=/app/data/monitor.sqlite
+      # - MCAPI_RATE_LIMIT_ENABLED=true
+      # - MCAPI_RATE_LIMIT_PER_MINUTE=60
+      # - MCAPI_API_KEYS=key1,key2
+      # - MCAPI_AVATAR_API_TEMPLATE=https://minotar.net/avatar/{uuid}.png
+      # - MCAPI_TRUST_PROXY_HEADERS=false
+      MCAPI_MONITOR_DB_PATH: /app/data/monitor.sqlite
+    restart: unless-stopped
+
+volumes:
+  mc-status-data:
+  mc-status-favicons:
+  mc-status-avatars:

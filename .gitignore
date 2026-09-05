@@ -1,0 +1,36 @@
+# ===== mc-server-api 服务端（PHP）运行时产物 =====
+data/metrics.json          # 进程内指标写盘（Windows php -S 跨请求持久化）
+data/cache.json            # 缓存持久化
+data/rate_limit*.json      # 限流桶持久化
+data/webhook_state.json    # Webhook 去重状态
+data/api_keys.json         # 动态 API Key（敏感！别进仓库）
+data/monitor.db            # SQLite 监控库（自动创建）
+data/monitor.db-journal
+
+# 解码后的资源缓存（自动创建，体积大）
+favicons/
+avatars/
+
+# 客户端源码暂不开源（以后一定）
+client/
+# ===== mcmon 客户端（Go）构建 + 运行时 =====
+client/mcmon.exe           # Windows 构建产物
+client/mcmon               # Unix 构建产物
+client/mcmon_dbg.exe       # 调试构建
+client/snapshots/          # GUI 运行时采样落盘（快照 + history + events + log）
+client/config.json         # 用户本地配置（config.example.json 是模板）
+
+# ===== 构建产物 =====
+release/                   # 分发包输出目录（zip + stage 文件夹）
+
+# ===== 通用 =====
+.workbuddy/
+overview.md
+TODO.md
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

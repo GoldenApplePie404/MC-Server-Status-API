@@ -1,0 +1,41 @@
+# =============================================================================
+# mc-server-api 子目录部署 —— Nginx 配置片段
+# -----------------------------------------------------------------------------
+# 用途：当项目部署在域名子目录 /mcstatus/ 时，在站点 Nginx 配置的
+#       server { } 块内加入以下 location 片段，由 index.php 前端控制器处理
+#       所有请求，并把 assets 静态资源映射到 public/assets 下的真实文件。
+#
+# 配合：config/config.php 的 base_path 设为 '/mcstatus'；
+#       PHP 版本需 8.1+，需启用 pdo_sqlite（可选）。
+#
+# 说明：以下假定进程内 PHP 变量名为 $fpm_socket 或 $fastcgi_pass 已在
+#       站点配置中定义；若未有对应 upstream，请将 fastcgi_pass 改为
+#       你面板实际的 PHP-FPM 地址（如 127.0.0.1:9000 或 unix:///tmp/php-cgi-XX.sock）。
+# =============================================================================
+
+# ---- 将下方插入 server { } 块 / 或伪静态(rewrite)区域 ----
+location /mcstatus/ {
+    # 站点根为 /PC_Web，项目位于 /PC_Web/mcstatus，public 为真实 Web 根
+    alias /PC_Web/mcstatus/public/;
+    index index.php;
+
+    # assets 静态资源：存在则直接返回
+    location ~ ^/mcstatus/assets/(.*)$ {
+        alias /PC_Web/mcstatus/public/assets/$1;
+        access_log off;
+        expires 7d;
+        add_header Cache-Control "public";
+        try_files $uri $uri/ /mcstatus/index.php?$query_string;
+    }
+
+    # 其余请求交给 index.php（伪静态）
+    location ~ /mcstatus/(.*)$ {
+        try_files $uri $uri/ /mcstatus/index.php?$query_string;
+    }
+
+    location ~ ^/mcstatus/(index\.php)?$ {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME /PC_Web/mcstatus/public/index.php;
+        fastcgi_pass $fpm_socket;   # 替换为实际 PHP-FPM 地址
+    }
+}

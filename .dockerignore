@@ -1,0 +1,14 @@
+# 构建上下文排除项：测试、运行期数据、本地缓存与版本控制
+tests/
+data/
+avatars/
+favicons/*.png
+*.sqlite
+.git/
+.gitignore
+Dockerfile
+docker-compose.yml
+README.md
+overview.md
+TODO.md
+.workbuddy/

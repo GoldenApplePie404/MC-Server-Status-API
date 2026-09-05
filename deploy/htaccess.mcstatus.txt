@@ -1,0 +1,32 @@
+# =============================================================================
+# mc-server-api 子目录部署 —— Apache (.htaccess)
+# -----------------------------------------------------------------------------
+# 用途：当项目部署在域名子目录（如 mcpc.goldenapplepie.xyz/mcstatus/）时，
+#       本站点的「运行目录/网站根目录」需指向 /PC_Web/mcstatus（即整个项目目录），
+#       由本文件把所有请求转发到 public/index.php 前端控制器，同时把
+#       assets 静态资源映射到 public/assets 下的真实文件。
+#
+# 用法：将本文件改名为 .htaccess 放到项目根目录（与 public/、src/ 同层）
+#       ，并把 config/config.php 的 base_path 设为 '/mcstatus'。
+#
+# 注意：若你的站点根目录不需要 /mcstatus 前缀（传统子目录绑定方式），
+#       请把下方 RewriteBase 与 base_path 中的 'mcstatus' 改为你实际的前缀；
+#       若前缀为空（部署在域名根目录），直接使用 public/.htaccess 即可，无需本文件。
+# =============================================================================
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /mcstatus/
+
+    # 静态资源：/mcstatus/assets/* -> public/assets/*（真实文件直接访问）
+    RewriteRule ^assets/(.*)$ public/assets/$1 [L]
+
+    # 其余所有请求（含 /、/docs、/metrics、/health、/api/*、/favicon/*、/avatar/*）
+    # 统一交给 public/index.php 前端控制器
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ public/index.php [QSA,L]
+</IfModule>
+
+# 禁止直接访问隐藏文件（.env、.git、data 等）
+RedirectMatch 404 /\..*$

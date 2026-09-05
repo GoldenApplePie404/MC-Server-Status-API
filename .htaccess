@@ -1,0 +1,7 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /mcstatus/
+
+    # 所有请求交给 index.php（静态资源由 serveStaticAsset() 处理）
+    RewriteRule ^ index.php [L]
+</IfModule>
