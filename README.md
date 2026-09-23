@@ -814,9 +814,9 @@ curl "http://127.0.0.1:8080/api/ping?host=mc.goldenapplepie.xyz"
 
 * **.dockerignore**：排除 tests/data/avatars/favicons 等运行期与开发文件
 
-## mcmon 客户端 GUI（可视化控制台）
+## mcmonitor 客户端 GUI（可视化控制台）
 
-`client/` 目录内是用 Go 编写的独立监控订阅客户端 `mcmon`，编译为单个可执行文件（Windows `.exe` / macOS / Linux），零运行时依赖、无需安装额外环境。双击启动即可弹出桌面原生客户端（内嵌 WebView2 渲染本地 Web 控制台），无需浏览器；也可用命令行做持续采样监控。
+`client/` 目录内是用 Go 编写的独立监控订阅客户端 `mcmonitor`，编译为单个可执行文件（Windows `.exe` / macOS / Linux），零运行时依赖、无需安装额外环境。双击启动即可弹出桌面原生客户端（内嵌 WebView2 渲染本地 Web 控制台），无需浏览器；也可用命令行做持续采样监控。
 
 ### 作用
 
@@ -832,7 +832,7 @@ curl "http://127.0.0.1:8080/api/ping?host=mc.goldenapplepie.xyz"
 
 * **数据持久化 + 上限裁剪**：历史快照（默认 500 条/服）、趋势图点数（默认 200）、事件日志（默认 200 条），全可在配置页调
 
-* **结构化日志**：`snapshots/log/mcmon.log`（1MB 文件 × 5 个轮转），INFO+ 同时输出到终端
+* **结构化日志**：`snapshots/log/mcmonitor.log`（1MB 文件 × 5 个轮转），INFO+ 同时输出到终端
 
 * **双重 panic recovery**：单轮采样炸了不退出，整协程炸了进程仍在，日志里有堆栈
 
@@ -845,15 +845,15 @@ curl "http://127.0.0.1:8080/api/ping?host=mc.goldenapplepie.xyz"
 ### 启动方式
 
 ```bash
-mcmon                   # 双击 / 无参数：直接打开桌面原生窗口（WebView2），关闭窗口即退出
-mcmon --web             # 改用系统浏览器打开控制台
-mcmon --run             # 命令行持续采样监控（按 Ctrl+C 退出）
+mcmonitor                   # 双击 / 无参数：直接打开桌面原生窗口（WebView2），关闭窗口即退出
+mcmonitor --web             # 改用系统浏览器打开控制台
+mcmonitor --run             # 命令行持续采样监控（按 Ctrl+C 退出）
 ```
 
 开发场景（前端热改无需重编译）：
 
 ```bash
-mcmon --ui --dev --no-browser --port 9099
+mcmonitor --ui --dev --no-browser --port 9099
 ```
 
 参数：
@@ -907,7 +907,7 @@ mcmon --ui --dev --no-browser --port 9099
 cd client
 go vet ./...
 go test ./... -v
-go build -o mcmon.exe .
+go build -o mcmonitor.exe .
 ```
 
 > 说明：默认 `config.json` 仅含少数键，`--ui` 启动时会用默认值兜底补齐。每次轮询采样会把快照落到本地 `snapshots/`，并把一条历史采样追加到 `snapshots/history/<key>.jsonl`（每台服务器默认最多保留 500 条，超出丢弃最旧），「数据统计监测」页即基于这些历史数据聚合趋势。
@@ -915,7 +915,7 @@ go build -o mcmon.exe .
 命令行采样模式（可配合 `--nopause` 用于脚本定时跑）：
 
 ```bash
-mcmon --run          # 命令行持续采样（按 Ctrl+C 退出）
+mcmonitor --run          # 命令行持续采样（按 Ctrl+C 退出）
 ```
 
 配置文件关键字段（`config.example.json` 里有完整示例）：
@@ -943,7 +943,7 @@ mcmon --run          # 命令行持续采样（按 Ctrl+C 退出）
 
 * **崩溃安全**：每次落盘（快照 / 历史裁剪 / 事件裁剪 / 清空）走 CreateTemp + Write + Sync + Rename，进程崩溃最多留下孤立 .tmp，旧文件始终完整可见
 
-* **日志轮转**：`snapshots/log/mcmon.log`，单文件 1MB、保留 5 个历史文件，INFO+ 同时输出到终端便于观察
+* **日志轮转**：`snapshots/log/mcmonitor.log`，单文件 1MB、保留 5 个历史文件，INFO+ 同时输出到终端便于观察
 
 * **双层 panic recovery**：GUI 后台采样协程外层兜底打 Error 日志后进程继续，内层每轮独立 recover 防止单轮坏数据导致后续轮询全部跳过
 
@@ -1001,7 +1001,7 @@ mc-server-api/
 ├── favicons/                # 解码后的 favicon 图片（自动创建）
 ├── avatars/                 # 玩家头像缓存（自动创建）
 ├── tests/                   # 轻量单元测试
-├── client/                  # mcmon 订阅监控客户端（Go，独立二进制）
+├── client/                  # mcmonitor 订阅监控客户端（Go，独立二进制）
 │   ├── main.go              # CLI 入口（默认 GUI / --run 后台采样）
 │   ├── config.go            # 配置结构体 + 默认值（含 UI 主题/数据保留/规则阈值）
 │   ├── subscription.go      # 订阅清单加载
@@ -1024,7 +1024,7 @@ mc-server-api/
 │   │   ├── index.html       # 五视图 + 配置页结构化卡片
 │   │   └── assets/          # app.css（主题变量）/ app.js / fusion-pixel.woff2
 │   ├── config.example.json  # 配置模板（复制为 config.json 即可）
-│   └── mcmon.exe            # Windows 构建产物（.gitignore 忽略）
+│   └── mcmonitor.exe            # Windows 构建产物（.gitignore 忽略）
 ├── Dockerfile               # Docker 镜像定义
 ├── docker-compose.yml       # 容器编排（服务名 mc-status-api）
 └── README.md

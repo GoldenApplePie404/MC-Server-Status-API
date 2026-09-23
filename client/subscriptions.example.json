@@ -1,0 +1,7 @@
+{
+  "servers": [
+    { "host": "mc.hypixel.net", "port": 25565, "alias": "Hypixel", "group": "大服" },
+    { "host": "mc.goldenapplepie.xyz", "port": 0, "alias": "金苹果派", "group": "自营" },
+    { "host": "mc.eqmemory.cn", "port": 0, "alias": "逸趣", "group": "自营" }
+  ]
+}

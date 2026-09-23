@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCMonitor 控制台</title>
+  <link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-block">▦</span>
+        <span class="brand-name">MCMonitor</span>
+      </div>
+      <nav class="nav">
+        <button class="nav-item active" data-view="search">
+          <svg class="nav-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          可视化搜索
+        </button>
+        <button class="nav-item" data-view="monitor">
+          <svg class="nav-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="10"/></svg>
+          订阅监控
+        </button>
+        <button class="nav-item" data-view="stats">
+          <svg class="nav-ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="5" y1="19" x2="5" y2="13"/><line x1="12" y1="19" x2="12" y2="7"/><line x1="19" y1="19" x2="19" y2="4"/></svg>
+          数据统计监测
+        </button>
+        <button class="nav-item" data-view="events">
+          <svg class="nav-ico" viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 3 3 20 21 20"/><line x1="12" y1="9" x2="12" y2="15"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+          告警与事件
+        </button>
+        <button class="nav-item" data-view="config">
+          <svg class="nav-ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"/><circle cx="9" cy="7" r="2"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="15" cy="17" r="2"/></svg>
+          配置
+        </button>
+      </nav>
+      <div class="sidebar-foot" id="state-pill">连接中…</div>
+    </aside>
+    <main class="content">
+      <div id="offline-banner" class="offline-banner hidden">数据源离线：无法连接本地服务</div>
+      <section class="view" id="view-search">
+        <div class="search-tabs">
+          <button class="search-tab active" data-mode="single">单查</button>
+          <button class="search-tab" data-mode="batch">批查</button>
+        </div>
+
+        <form id="single-form" class="search-form">
+          <input type="text" id="s-host" placeholder="服务器地址 (如 mc.hypixel.net)" required>
+          <input type="number" id="s-port" placeholder="端口 (默认 25565)">
+          <button type="submit">查询</button>
+        </form>
+        <div id="single-result" class="result-area"></div>
+
+        <div id="batch-form" class="search-form hidden">
+          <textarea id="b-hosts" rows="6" placeholder="每行一个服务器地址，可带端口:  host  或  host:port"></textarea>
+          <button type="button" id="b-go">批量查询</button>
+        </div>
+        <div id="batch-result" class="result-area"></div>
+      </section>
+      <section class="view hidden" id="view-monitor">
+        <div class="monitor-head">
+          <h2>订阅监控</h2>
+          <span class="auto-refresh-hint">每 30s 自动刷新</span>
+        </div>
+        <div id="monitor-list" class="monitor-list">加载中…</div>
+      </section>
+      <section class="view hidden" id="view-stats">
+        <div class="stats-head">
+          <h2>数据统计监测</h2>
+          <span class="auto-refresh-hint">基于本地落盘的历史快照，每 30s 自动刷新</span>
+        </div>
+        <div id="stats-list" class="stats-list">加载中…</div>
+      </section>
+      <section class="view hidden" id="view-events">
+        <div class="events-head">
+          <h2>告警与事件</h2>
+          <div class="events-tools">
+            <label class="filter-alert"><input type="checkbox" id="ev-only-alert">只看告警</label>
+            <button type="button" id="ev-clear" class="btn-danger">清空</button>
+            <span class="auto-refresh-hint">每 15s 自动刷新</span>
+          </div>
+        </div>
+        <div id="events-list" class="events-list">加载中…</div>
+      </section>
+      <section class="view hidden" id="view-config">
+        <h2>配置</h2>
+        <form id="config-form">
+          <div class="cfg-section">
+            <h3>外观</h3>
+            <div class="cfg-row-2col">
+              <label>主题预设
+                <select id="cfg-theme">
+                  <optgroup label="亮色">
+                    <option value="dirt">草绿泥土（默认）</option>
+                    <option value="ocean">海洋蓝</option>
+                    <option value="sand">沙漠金</option>
+                  </optgroup>
+                  <optgroup label="深色">
+                    <option value="end">末地紫黑</option>
+                    <option value="nether">下界红黑</option>
+                    <option value="cobalt">钴蓝工业</option>
+                    <option value="obsidian">黑曜石紫</option>
+                    <option value="deepslate">深板岩洞穴</option>
+                  </optgroup>
+                </select>
+              </label>
+              <label class="cfg-checkbox" style="align-self:flex-end;"><input type="checkbox" id="cfg-auto-dark">跟随系统深浅（亮色预设会自动翻深色）</label>
+            </div>
+          </div>
+          <div class="cfg-section">
+            <h3>基础设置</h3>
+            <div class="cfg-row-2col">
+              <label class="cfg-span-2">数据源地址<input type="text" id="cfg-server-url"></label>
+              <label>轮询间隔(秒)<input type="number" id="cfg-poll" min="10"></label>
+              <label>默认端口<input type="number" id="cfg-port"></label>
+            </div>
+          </div>
+          <div class="cfg-section">
+            <h3>规则阈值</h3>
+            <div class="cfg-row-2col">
+              <label>离线连续判定(轮)<input type="number" id="cfg-offline" min="1"></label>
+              <label>延迟告警阈值(ms)<input type="number" id="cfg-latency" min="0"></label>
+              <label>人数骤降比例(0~1)<input type="number" id="cfg-drop" min="0" max="1" step="0.05"></label>
+              <label>骤降最小人数<input type="number" id="cfg-dropmin" min="0"></label>
+            </div>
+          </div>
+          <div class="cfg-section">
+            <h3>数据保留</h3>
+            <div class="cfg-row-2col">
+              <label>历史快照上限(条/服)<input type="number" id="cfg-hist" min="20"></label>
+              <label>趋势图点数上限<input type="number" id="cfg-series" min="10"></label>
+            </div>
+          </div>
+          <hr>
+          <div class="cfg-section">
+            <h3>告警与事件</h3>
+            <div class="cfg-checkbox-row">
+              <label class="cfg-checkbox"><input type="checkbox" id="cfg-event-enabled">启用事件落盘</label>
+              <label class="cfg-checkbox"><input type="checkbox" id="cfg-event-summary">记录周期总结到事件列表</label>
+            </div>
+            <div class="cfg-row-2col">
+              <label>告警去重冷却(秒)<input type="number" id="cfg-alert-cd" min="0"></label>
+              <label>事件日志上限(条)<input type="number" id="cfg-event-max" min="10"></label>
+            </div>
+          </div>
+          <hr>
+          <h3>订阅清单</h3>
+          <div id="subs-editor"></div>
+          <button type="submit" id="cfg-save">保存</button>
+          <span id="cfg-msg"></span>
+        </form>
+      </section>
+    </main>
+  </div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

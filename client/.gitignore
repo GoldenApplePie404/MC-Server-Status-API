@@ -1,0 +1,11 @@
+# 本地运行期产物（不纳入版本库）
+# 本地私有配置可能含 webhook_token，勿提交；模板见 config.example.json
+config.json
+subscriptions.json
+# 命令行采样 / GUI 轮询产生的本地快照与历史数据
+snapshots/
+# WebView2 运行目录
+webview2-data/
+# 编译产物
+mcmonitor.exe
+*.exe

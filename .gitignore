@@ -11,14 +11,13 @@ data/monitor.db-journal
 favicons/
 avatars/
 
-# 客户端源码暂不开源（以后一定）
-client/
-# ===== mcmon 客户端（Go）构建 + 运行时 =====
-client/mcmon.exe           # Windows 构建产物
-client/mcmon               # Unix 构建产物
-client/mcmon_dbg.exe       # 调试构建
+# ===== mcmonitor 客户端（Go）构建 + 运行时 =====
+client/mcmonitor.exe       # Windows 构建产物
+client/mcmonitor           # Unix 构建产物
+client/mcmonitor_dbg.exe   # 调试构建
 client/snapshots/          # GUI 运行时采样落盘（快照 + history + events + log）
 client/config.json         # 用户本地配置（config.example.json 是模板）
+client/subscriptions.json  # 用户本地订阅清单
 
 # ===== 构建产物 =====
 release/                   # 分发包输出目录（zip + stage 文件夹）
