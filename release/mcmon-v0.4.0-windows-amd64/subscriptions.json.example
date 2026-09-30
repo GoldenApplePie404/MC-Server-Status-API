@@ -1,8 +1,0 @@
-[
-  {
-    "host": "mc.example.com",
-    "port": 25565,
-    "alias": "示例服务器（可以删）",
-    "group": "默认"
-  }
-]

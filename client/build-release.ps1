@@ -4,6 +4,9 @@
 #        ./build-release.ps1 -Version 0.5.0
 #        ./build-release.ps1 -SkipBuild     # skip go build, just zip
 # ============================================================
+# NOTE: keep this file ASCII-only. Windows PowerShell 5.1
+# decodes BOM-less scripts with the ANSI codepage, and Chinese
+# comments in UTF-8 bytes can break string/variable parsing.
 
 param(
     [string]$Version = "0.4.0",
@@ -12,6 +15,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $clientDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+if (-not $clientDir) { $clientDir = (Get-Location).Path }
 $rootDir   = Split-Path -Parent $clientDir
 $outDir    = Join-Path $rootDir "release\mcmonitor-v$Version-windows-amd64"
 $zipPath   = Join-Path $rootDir "release\mcmonitor-v$Version-windows-amd64.zip"
@@ -48,14 +52,20 @@ Copy-Item "$clientDir\mcmonitor.exe"                 (Join-Path $outDir "mcmonit
 Copy-Item "$clientDir\config.example.json"       (Join-Path $outDir "config.example.json")       -Force
 Copy-Item "$clientDir\subscriptions.json.example" (Join-Path $outDir "subscriptions.json.example") -Force
 
-# ---------- 3. Copy readme template (UTF-8 BOM, notepad-friendly on Chinese Windows) ----------
+# ---------- 3. Copy readme template ----------
+# Use ASCII filename README.txt inside the zip. A Chinese filename
+# ("use_shuo_ming.txt") shows as mojibake ("浣跨敤璇存槑") when the
+# extracting tool does not honor the zip UTF-8 filename flag.
+# Content stays Chinese (UTF-8 with BOM) so Notepad reads it fine.
 $tplPath = Join-Path $clientDir "release-readme.txt"
 if (Test-Path $tplPath) {
-    # Read as UTF-8 (no BOM) then write with BOM so Windows notepad displays Chinese correctly
+    Write-Host "    readme: $tplPath -> README.txt" -ForegroundColor DarkGray
     $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
     $utf8Bom   = New-Object System.Text.UTF8Encoding($true)
     $text = [System.IO.File]::ReadAllText($tplPath, $utf8NoBom)
-    [System.IO.File]::WriteAllText((Join-Path $outDir "使用说明.txt"), $text, $utf8Bom)
+    $readmePath = Join-Path $outDir "README.txt"
+    [System.IO.File]::WriteAllText($readmePath, $text, $utf8Bom)
+    Write-Host "    readme written: $(Test-Path $readmePath)" -ForegroundColor DarkGray
 }
 else {
     Write-Host "    [skip] release-readme.txt not found" -ForegroundColor DarkGray

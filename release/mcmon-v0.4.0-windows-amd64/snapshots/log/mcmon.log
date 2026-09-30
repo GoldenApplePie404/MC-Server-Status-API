@@ -1,2 +1,0 @@
-2026-09-05 22:04:31.510 [INFO] mcmon 0.5.0 (GUI 桌面) 启动 (GUI 模式), 数据源: https://mcpc.goldenapplepie.xyz/mcstatus
-2026-09-05 22:04:31.540 [WARN] 后台采样-读取订阅失败: 读取订阅清单 subscriptions.json 失败: open subscriptions.json: The system cannot find the file specified.

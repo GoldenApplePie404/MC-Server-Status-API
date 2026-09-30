@@ -1,10 +1,16 @@
 # ===== mc-server-api 服务端（PHP）运行时产物 =====
-data/metrics.json          # 进程内指标写盘（Windows php -S 跨请求持久化）
-data/cache.json            # 缓存持久化
-data/rate_limit*.json      # 限流桶持久化
-data/webhook_state.json    # Webhook 去重状态
-data/api_keys.json         # 动态 API Key（敏感！别进仓库）
-data/monitor.db            # SQLite 监控库（自动创建）
+# 进程内指标写盘（Windows php -S 跨请求持久化）
+data/metrics.json
+# 缓存持久化
+data/cache.json
+# 限流桶持久化
+data/rate_limit*.json
+data/ratelimit.json
+data/webhook_state.json
+# 动态 API Key（敏感！别进仓库）
+data/api_keys.json
+# SQLite 监控库（自动创建）
+data/monitor.db
 data/monitor.db-journal
 
 # 解码后的资源缓存（自动创建，体积大）
@@ -12,15 +18,21 @@ favicons/
 avatars/
 
 # ===== mcmonitor 客户端（Go）构建 + 运行时 =====
-client/mcmonitor.exe       # Windows 构建产物
-client/mcmonitor           # Unix 构建产物
-client/mcmonitor_dbg.exe   # 调试构建
-client/snapshots/          # GUI 运行时采样落盘（快照 + history + events + log）
-client/config.json         # 用户本地配置（config.example.json 是模板）
-client/subscriptions.json  # 用户本地订阅清单
+# Windows 构建产物
+client/mcmonitor.exe
+# Unix 构建产物
+client/mcmonitor
+client/mcmonitor_dbg.exe
+client/mcmon.exe
+client/mcmon
+# GUI 运行时采样落盘（快照 + history + events + log）
+client/snapshots/
+# 用户本地配置（config.example.json 是模板）
+client/config.json
+client/subscriptions.json
 
 # ===== 构建产物 =====
-release/                   # 分发包输出目录（zip + stage 文件夹）
+release/
 
 # ===== 通用 =====
 .workbuddy/
